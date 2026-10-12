@@ -76,8 +76,7 @@ entity main is
       dn_addr_i               : in  std_logic_vector(24 downto 0);
       dn_data_i               : in  std_logic_vector(7 downto 0);
       dn_wr_i                 : in  std_logic;
-      
-      video_flip_o            : out std_logic;
+     
       osm_control_i           : in  std_logic_vector(255 downto 0)
    );
 end entity main;
@@ -108,7 +107,6 @@ signal gs_dipsw_b        : std_logic_vector(7 downto 0);
 signal gs_dipsw          : std_logic_vector(31 downto 0);
 signal service           : std_logic;
 
-signal dip_pause         : std_logic;
 signal dip_flip          : std_logic;
 
 -- JTFRAME clock enables
@@ -245,8 +243,6 @@ begin
     reset <= reset_soft_i or reset_hard_i;
     
     video_ce_o <= cen6;
-    
-    video_flip_o <= dip_flip;
 
     prog_addr <= std_logic_vector(resize(unsigned(dn_addr_i), prog_addr'length) - to_unsigned(C_PROM_START, prog_addr'length));
     prog_data <= dn_data_i;
@@ -334,7 +330,6 @@ begin
     gs_coin(0) <= keyboard_n(m65_6);
     gs_coin(1) <= keyboard_n(m65_5);
     service <= keyboard_n(m65_9);
-    gs_dipsw <= gs_dipsw;
     
     potxy1_sw   <= osm_control_i(C_MENU_SECOND_FIRE_1); -- Joy 1: 0 = POTX, 1 = POTY
     potxy2_sw   <= osm_control_i(C_MENU_SECOND_FIRE_2); -- Joy 2: 0 = POTX, 1 = POTY
@@ -473,8 +468,8 @@ begin
 
         -- DIP switches
         dipsw       => gs_dipsw,
-        dip_pause   => dip_pause,
-        dip_flip    => dip_flip,
+        dip_pause   => keyboard_n(m65_capslock),
+        dip_flip    => '1',
 
         -- Video
         red          => video_red_o,
@@ -528,7 +523,7 @@ begin
         prog_addr   => prog_addr,
         prog_data   => prog_data,
         prom_we     => prom_we,
-        ioctl_addr  => std_logic_vector(resize(unsigned(dn_addr_i), 25)),
+        ioctl_addr => std_logic_vector(resize(unsigned(dn_addr_i), 25) -to_unsigned(C_PROM_START, 25)),
 
         -- Layer enables
         gfx_en      => "1111",

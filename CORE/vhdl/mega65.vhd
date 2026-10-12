@@ -449,8 +449,6 @@ begin
          dn_data_i            => qnice_dn_data,
          dn_wr_i              => qnice_dn_wr,
          
-         video_flip_o         => video_flip,
-
          osm_control_i        => main_osm_control_i
          
       ); -- i_main
@@ -516,7 +514,7 @@ begin
           VGA_HS         => video_hs,
           VGA_VS         => video_vs,
           VGA_DE         => video_de,
-          rotate_ccw     => not video_flip,
+          rotate_ccw     => '0',
           no_rotate      => '0',
           flip           => '0',
           FB_VBL         => '0',
