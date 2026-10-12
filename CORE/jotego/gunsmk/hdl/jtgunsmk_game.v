@@ -220,6 +220,7 @@ jt1943_video #(
 ) u_video(
     .rst           ( rst           ),
     .clk           ( clk           ),
+    .prog_clk      ( prog_clk      ),
     .pxl2_cen      ( pxl2_cen      ),
     .pxl_cen       ( pxl_cen       ),
     .cen8          ( cen8          ),
