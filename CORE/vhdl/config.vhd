@@ -88,7 +88,7 @@ constant SCR_WELCOME : string :=
    "Credits  : Press '5' or '6'\n"        &
    "Start    : Press '1' or '2'\n"        &
    "Controls : Joystick or arrows\n"      &
-   "Fire     : Joy | 'Z' and 'X'\n" &
+   "Fire     : Joy | Z,X & C\n" &
    "\n\n    Press Space to continue.\n"; 
    
 constant HELP_1 : string :=
