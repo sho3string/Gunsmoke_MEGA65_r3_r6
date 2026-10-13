@@ -318,24 +318,45 @@ constant OPTM_S_SAVING     : string := "<Saving>";          -- the internal writ
 --             Do use a lower case \n. If you forget one of them or if you use upper case, you will run into undefined behavior.
 --          2. Start each line that contains an actual menu item (multi- or single-select) with a Space character,
 --             otherwise you will experience visual glitches.
-constant OPTM_SIZE         : natural := 59;  -- amount of items including empty lines:
+constant OPTM_SIZE         : natural := 80;  -- amount of items including empty lines:
                                              -- needs to be equal to the number of lines in OPTM_ITEMS and amount of items in OPTM_GROUPS
                                              -- IMPORTANT: If SAVE_SETTINGS is true and OPTM_SIZE changes: Make sure to re-generate and
                                              -- and re-distribute the config file. You can make a new one using M2M/tools/make_config.sh
 
 -- Net size of the Options menu on the screen in characters (excluding the frame, which is hardcoded to two characters)
 -- Without submenus: Use OPTM_SIZE as height, otherwise count how large the actually visible main menu is.
-constant OPTM_DX           : natural := 23;
-constant OPTM_DY           : natural := 21;
+constant OPTM_DX           : natural := 29;
+constant OPTM_DY           : natural := 25;
 
 constant OPTM_ITEMS : string :=
    " Gunsmoke\n"            &
    "\n"                     &
    " Flip joystick ports\n" &
-   " P1 Fire 2 POTX|POTY\n" &
-   " P2 Fire 2 POTX|POTY\n" &
-   " P1 fire 2 polarity\n"  &
-   " P2 fire 2 polarity\n"  &
+   " Button Controls\n"     &
+   " Button Controls\n"     &
+   "\n"                     &
+   " Player 1 Fire Layout\n" &
+   "\n"                     &
+   " Left:POTX Mid:Fire R:POTY\n" &
+   " Left:POTY Mid:Fire R:POTX\n" &
+   " Left:Fire Mid:POTX R:POTY\n" &
+   " Left:Fire Mid:POTY R:POTX\n" &
+   " Left:POTX Mid:POTY R:Fire\n" &
+   " Left:POTY Mid:POTX R:Fire\n" &
+   "\n"                     &
+   " Player 2 Fire Layout\n" &
+   "\n"                     &
+   " Left:POTX Mid:Fire R:POTY\n" &
+   " Left:POTY Mid:Fire R:POTX\n" &
+   " Left:Fire Mid:POTX R:POTY\n" &
+   " Left:Fire Mid:POTY R:POTX\n" &
+   " Left:POTX Mid:POTY R:Fire\n" &
+   " Left:POTY Mid:POTX R:Fire\n" &
+   "\n"                     &
+   " P1 POT polarity\n"     &
+   " P2 POT polarity\n"     &
+   "\n"                     &
+   " Back to main menu\n"   &
    "\n"                     &
    " Display Settings\n"    &
    "\n"                     &
@@ -370,7 +391,7 @@ constant OPTM_ITEMS : string :=
    " DSW A & B\n"           &
    " SW1-1 Bonus Player\n"  &
    " SW1-2 Bonus Player\n"  &
-   " SW1-3 Demo\n"          &
+   " SW1-3 Demonstration\n" & -- expedited intro
    " SW1-4 Game Type\n"     &
    " SW1-5 Difficulty\n"    &
    " SW1-6 Difficulty\n"    &
@@ -382,8 +403,8 @@ constant OPTM_ITEMS : string :=
    " SW2-4 Coin 2\n"        &
    " SW2-5 Coin 2\n"        &
    " SW2-6 Coin 2\n"        &
-   " SW2-7 Continue\n"      &
-   " SW2-8 Attract Sound\n" &
+   " SW2-7 Disable Continue\n"  &
+   " SW2-8 Attract Sound Off\n" &
    "\n"                     &
    " Back to main menu\n"   &
    "\n"                     &
@@ -431,8 +452,8 @@ constant OPTM_G_VGA_MODES      : integer := 30;
 constant OPTM_G_FLIPJ          : integer := 31;
 constant OPTM_G_SOFTW          : integer := 32;
 -- Player controls
-constant OPTM_G_SECOND_FIRE_1  : integer := 33;
-constant OPTM_G_SECOND_FIRE_2  : integer := 34;
+constant OPTM_G_FIRE_LAYOUT_1  : integer := 33;
+constant OPTM_G_FIRE_LAYOUT_2  : integer := 34;
 constant OPTM_G_POTPOL_1       : integer := 35;
 constant OPTM_G_POTPOL_2       : integer := 36;
 
@@ -442,30 +463,50 @@ type OPTM_GTYPE is array (0 to OPTM_SIZE - 1) of integer range 0 to 2**OPTM_GTC-
 -- define your menu groups: which menu items are belonging together to form a group?
 -- where are separator lines? which items should be selected by default?
 -- make sure that you have exactly the same amount of entries here than in OPTM_ITEMS and defined by OPTM_SIZE
-                                constant OPTM_GROUPS       : OPTM_GTYPE := ( 
+                                constant OPTM_GROUPS       : OPTM_GTYPE := (
                                              OPTM_G_TEXT + OPTM_G_HEADLINE,
                                              OPTM_G_LINE,
                                              OPTM_G_FLIPJ + OPTM_G_SINGLESEL + OPTM_G_START,
-                                             -- Second joystick button configuration
-                                             OPTM_G_SECOND_FIRE_1 + OPTM_G_SINGLESEL,
-                                             OPTM_G_SECOND_FIRE_2 + OPTM_G_SINGLESEL,
-                                             OPTM_G_POTPOL_1      + OPTM_G_SINGLESEL,
-                                             OPTM_G_POTPOL_2      + OPTM_G_SINGLESEL,
+                                             OPTM_G_SUBMENU,
+                                             OPTM_G_HEADLINE,
+                                             OPTM_G_LINE,
+                                             OPTM_G_HEADLINE,
+                                             OPTM_G_LINE,
+                                             OPTM_G_FIRE_LAYOUT_1 + OPTM_G_STDSEL,
+                                             OPTM_G_FIRE_LAYOUT_1,
+                                             OPTM_G_FIRE_LAYOUT_1,
+                                             OPTM_G_FIRE_LAYOUT_1,
+                                             OPTM_G_FIRE_LAYOUT_1,
+                                             OPTM_G_FIRE_LAYOUT_1,
+                                             OPTM_G_LINE,
+                                             OPTM_G_HEADLINE,
+                                             OPTM_G_LINE,
+                                             OPTM_G_FIRE_LAYOUT_2 + OPTM_G_STDSEL,
+                                             OPTM_G_FIRE_LAYOUT_2,
+                                             OPTM_G_FIRE_LAYOUT_2,
+                                             OPTM_G_FIRE_LAYOUT_2,
+                                             OPTM_G_FIRE_LAYOUT_2,
+                                             OPTM_G_FIRE_LAYOUT_2,
+                                             OPTM_G_LINE,
+                                             OPTM_G_POTPOL_1 + OPTM_G_SINGLESEL,
+                                             OPTM_G_POTPOL_2 + OPTM_G_SINGLESEL,
+                                             OPTM_G_LINE,
+                                             OPTM_G_CLOSE + OPTM_G_SUBMENU,
                                              OPTM_G_LINE,
                                              OPTM_G_TEXT + OPTM_G_HEADLINE,
-                                             OPTM_G_LINE,                                               -- Line
-                                             OPTM_G_ROT90 + OPTM_G_SINGLESEL + OPTM_G_STDSEL,           -- Rotate On/Off toggle ("Single Select")
-                                             OPTM_G_CRT   + OPTM_G_SINGLESEL + OPTM_G_STDSEL,           -- CRT emulation On/Off toggle ("Single Select")
+                                             OPTM_G_LINE,
+                                             OPTM_G_ROT90 + OPTM_G_SINGLESEL + OPTM_G_STDSEL,
+                                             OPTM_G_CRT   + OPTM_G_SINGLESEL + OPTM_G_STDSEL,
                                              OPTM_G_SUBMENU,
                                              OPTM_G_TEXT + OPTM_G_HEADLINE,
                                              OPTM_G_LINE,
-                                             OPTM_G_HDMI,                   -- 720p 50 Hz 16:9
-                                             OPTM_G_HDMI + OPTM_G_STDSEL,   -- 720p 60 Hz 16:9
-                                             OPTM_G_HDMI,                   -- 576p 50 Hz 4:3
-                                             OPTM_G_HDMI,                   -- 576p 50 Hz 5:4
-                                             OPTM_G_HDMI,                   -- 640x480 60 Hz
-                                             OPTM_G_HDMI,                   -- 720p 59.94 Hz 16:9
-                                             OPTM_G_HDMI,                   -- SVGA 800x600 60 Hz
+                                             OPTM_G_HDMI,
+                                             OPTM_G_HDMI + OPTM_G_STDSEL,
+                                             OPTM_G_HDMI,
+                                             OPTM_G_HDMI,
+                                             OPTM_G_HDMI,
+                                             OPTM_G_HDMI,
+                                             OPTM_G_HDMI,
                                              OPTM_G_LINE,
                                              OPTM_G_CLOSE + OPTM_G_SUBMENU,
                                              OPTM_G_SUBMENU,
@@ -479,31 +520,31 @@ type OPTM_GTYPE is array (0 to OPTM_SIZE - 1) of integer range 0 to 2**OPTM_GTC-
                                              OPTM_G_VGA_MODES,
                                              OPTM_G_LINE,
                                              OPTM_G_CLOSE         + OPTM_G_SUBMENU,
-                                             OPTM_G_LINE,                                              
-                                             OPTM_G_TEXT + OPTM_G_HEADLINE,                          
-                                             OPTM_G_LINE,                                             
-                                             OPTM_G_SUBMENU,                                                                                       
-                                             OPTM_G_GAP_DSWA0  + OPTM_G_SINGLESEL,                  
-                                             OPTM_G_GAP_DSWA1  + OPTM_G_SINGLESEL,                 
-                                             OPTM_G_GAP_DSWA2  + OPTM_G_SINGLESEL,            
-                                             OPTM_G_GAP_DSWA3  + OPTM_G_SINGLESEL,                    
-                                             OPTM_G_GAP_DSWA4  + OPTM_G_SINGLESEL,                 
-                                             OPTM_G_GAP_DSWA5  + OPTM_G_SINGLESEL,                
-                                             OPTM_G_GAP_DSWA6  + OPTM_G_SINGLESEL,                  
-                                             OPTM_G_GAP_DSWA7  + OPTM_G_SINGLESEL,              
-                                             OPTM_G_GAP_DSWB0  + OPTM_G_SINGLESEL + OPTM_G_STDSEL,                  
-                                             OPTM_G_GAP_DSWB1  + OPTM_G_SINGLESEL + OPTM_G_STDSEL,                     
-                                             OPTM_G_GAP_DSWB2  + OPTM_G_SINGLESEL,                            
-                                             OPTM_G_GAP_DSWB3  + OPTM_G_SINGLESEL,                   
+                                             OPTM_G_LINE,
+                                             OPTM_G_TEXT + OPTM_G_HEADLINE,
+                                             OPTM_G_LINE,
+                                             OPTM_G_SUBMENU,
+                                             OPTM_G_GAP_DSWA0  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWA1  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWA2  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWA3  + OPTM_G_SINGLESEL + OPTM_G_STDSEL,
+                                             OPTM_G_GAP_DSWA4  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWA5  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWA6  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWA7  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWB0  + OPTM_G_SINGLESEL + OPTM_G_STDSEL,
+                                             OPTM_G_GAP_DSWB1  + OPTM_G_SINGLESEL + OPTM_G_STDSEL,
+                                             OPTM_G_GAP_DSWB2  + OPTM_G_SINGLESEL,
+                                             OPTM_G_GAP_DSWB3  + OPTM_G_SINGLESEL,
                                              OPTM_G_GAP_DSWB4  + OPTM_G_SINGLESEL,
                                              OPTM_G_GAP_DSWB5  + OPTM_G_SINGLESEL,
                                              OPTM_G_GAP_DSWB6  + OPTM_G_SINGLESEL,
-                                             OPTM_G_GAP_DSWB7  + OPTM_G_SINGLESEL,                           
+                                             OPTM_G_GAP_DSWB7  + OPTM_G_SINGLESEL,
                                              OPTM_G_LINE,
                                              OPTM_G_CLOSE + OPTM_G_SUBMENU,
-											 OPTM_G_LINE,
-											 OPTM_G_CLOSE 
-											 );
+                                             OPTM_G_LINE,
+                                             OPTM_G_CLOSE
+                                             );
 
 
 --------------------------------------------------------------------------------------------------------------------

@@ -19,46 +19,46 @@ package globals is
 
 constant C_FLIP_JOYS          : natural := 2;
 
--- Second joystick buttons
-constant C_MENU_SECOND_FIRE_1 : natural := 3;
-constant C_MENU_SECOND_FIRE_2 : natural := 4;
-constant C_MENU_POTPOL_1      : natural := 5;
-constant C_MENU_POTPOL_2      : natural := 6;
+-- Button Controls: six exclusive choices per player
+constant C_MENU_FIRE_LAYOUT_1 : natural := 8;
+constant C_MENU_FIRE_LAYOUT_2 : natural := 17;
+constant C_MENU_POTPOL_1      : natural := 24;
+constant C_MENU_POTPOL_2      : natural := 25;
 
-constant C_MENU_ROT90         : natural := 10;
-constant C_MENU_CRT_EMULATION : natural := 11;
+constant C_MENU_ROT90         : natural := 31;
+constant C_MENU_CRT_EMULATION : natural := 32;
 
-constant C_MENU_HDMI_16_9_50  : natural := 15;
-constant C_MENU_HDMI_16_9_60  : natural := 16;
-constant C_MENU_HDMI_4_3_50   : natural := 17;
-constant C_MENU_HDMI_5_4_50   : natural := 18;
-constant C_MENU_HDMI_640_60   : natural := 19;
-constant C_MENU_HDMI_720_5994 : natural := 20;
-constant C_MENU_SVGA_800_60   : natural := 21;
+constant C_MENU_HDMI_16_9_50  : natural := 36;
+constant C_MENU_HDMI_16_9_60  : natural := 37;
+constant C_MENU_HDMI_4_3_50   : natural := 38;
+constant C_MENU_HDMI_5_4_50   : natural := 39;
+constant C_MENU_HDMI_640_60   : natural := 40;
+constant C_MENU_HDMI_720_5994 : natural := 41;
+constant C_MENU_SVGA_800_60   : natural := 42;
 
-constant C_MENU_VGA_STD       : natural := 27;
-constant C_MENU_VGA_15KHZHSVS : natural := 31;
-constant C_MENU_VGA_15KHZCS   : natural := 32;
+constant C_MENU_VGA_STD       : natural := 48;
+constant C_MENU_VGA_15KHZHSVS : natural := 52;
+constant C_MENU_VGA_15KHZCS   : natural := 53;
 
 -- Gunsmoke DIP SW1
-constant C_MENU_SW1_0         : natural := 39;
-constant C_MENU_SW1_1         : natural := 40;
-constant C_MENU_SW1_2         : natural := 41;
-constant C_MENU_SW1_3         : natural := 42;
-constant C_MENU_SW1_4         : natural := 43;
-constant C_MENU_SW1_5         : natural := 44;
-constant C_MENU_SW1_6         : natural := 45;
-constant C_MENU_SW1_7         : natural := 46;
+constant C_MENU_SW1_0         : natural := 60;
+constant C_MENU_SW1_1         : natural := 61;
+constant C_MENU_SW1_2         : natural := 62;
+constant C_MENU_SW1_3         : natural := 63;
+constant C_MENU_SW1_4         : natural := 64;
+constant C_MENU_SW1_5         : natural := 65;
+constant C_MENU_SW1_6         : natural := 66;
+constant C_MENU_SW1_7         : natural := 67;
 
 -- Gunsmoke DIP SW2
-constant C_MENU_SW2_0         : natural := 47;
-constant C_MENU_SW2_1         : natural := 48;
-constant C_MENU_SW2_2         : natural := 49;
-constant C_MENU_SW2_3         : natural := 50;
-constant C_MENU_SW2_4         : natural := 51;
-constant C_MENU_SW2_5         : natural := 52;
-constant C_MENU_SW2_6         : natural := 53;
-constant C_MENU_SW2_7         : natural := 54;
+constant C_MENU_SW2_0         : natural := 68;
+constant C_MENU_SW2_1         : natural := 69;
+constant C_MENU_SW2_2         : natural := 70;
+constant C_MENU_SW2_3         : natural := 71;
+constant C_MENU_SW2_4         : natural := 72;
+constant C_MENU_SW2_5         : natural := 73;
+constant C_MENU_SW2_6         : natural := 74;
+constant C_MENU_SW2_7         : natural := 75;
 
 ----------------------------------------------------------------------------------------------------------
 -- QNICE Firmware

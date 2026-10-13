@@ -98,14 +98,13 @@ signal reset       : std_logic;
 -- Gun.Smoke cabinet controls
 signal gs_cab_1p         : std_logic_vector(1 downto 0);
 signal gs_coin           : std_logic_vector(1 downto 0);
-signal joystick1         : std_logic_vector(5 downto 0);
-signal joystick2         : std_logic_vector(5 downto 0);
+signal joystick1         : std_logic_vector(6 downto 0);
+signal joystick2         : std_logic_vector(6 downto 0);
 
 -- DIP Switches
 signal gs_dipsw_a        : std_logic_vector(7 downto 0);
 signal gs_dipsw_b        : std_logic_vector(7 downto 0);
 signal gs_dipsw          : std_logic_vector(31 downto 0);
-signal service           : std_logic;
 
 signal dip_flip          : std_logic;
 
@@ -162,12 +161,13 @@ signal prog_data   : std_logic_vector(7 downto 0);
 signal prom_we     : std_logic;
 signal shoot2_button1_n : std_logic := '1';
 signal shoot2_button2_n : std_logic := '1';
-signal pot1_val    : std_logic_vector(7 downto 0);
-signal pot2_val    : std_logic_vector(7 downto 0);
-signal potxy1_sw   : std_logic;
-signal potxy2_sw   : std_logic;
 signal pot_pol1_sw : std_logic;
 signal pot_pol2_sw : std_logic;
+
+signal p1_fire_n, p1_potx_n, p1_poty_n : std_logic;
+signal p2_fire_n, p2_potx_n, p2_poty_n : std_logic;
+signal p1_left_n, p1_centre_n, p1_right_n : std_logic;
+signal p2_left_n, p2_centre_n, p2_right_n : std_logic;
 
 -- ROM download write enables
 signal dn_main_we    : std_logic;
@@ -220,6 +220,7 @@ constant m65_left_crsr  : integer := 74; --Player left
 constant m65_horz_crsr  : integer := 2;  --Player right
 constant m65_z          : integer := 12; --Fire 1
 constant m65_x          : integer := 23; --Fire 2
+constant m65_c          : integer := 20; --Fire 3
 constant m65_capslock   : integer := 72; --Pause
 
 
@@ -305,123 +306,95 @@ begin
  
     -- SW1
     gs_dipsw_a <= not (
-    osm_control_i(C_MENU_SW1_0) &
-    osm_control_i(C_MENU_SW1_1) &
-    osm_control_i(C_MENU_SW1_2) &
-    osm_control_i(C_MENU_SW1_3) &
-    osm_control_i(C_MENU_SW1_4) &
-    osm_control_i(C_MENU_SW1_5) &
+    osm_control_i(C_MENU_SW1_7) &
     osm_control_i(C_MENU_SW1_6) &
-    osm_control_i(C_MENU_SW1_7));
+    osm_control_i(C_MENU_SW1_5) &
+    osm_control_i(C_MENU_SW1_4) &
+    osm_control_i(C_MENU_SW1_3) &
+    osm_control_i(C_MENU_SW1_2) &
+    osm_control_i(C_MENU_SW1_1) &
+    osm_control_i(C_MENU_SW1_0));
     
     gs_dipsw_b <= not (
-    osm_control_i(C_MENU_SW2_0) &
-    osm_control_i(C_MENU_SW2_1) &
-    osm_control_i(C_MENU_SW2_2) &
-    osm_control_i(C_MENU_SW2_3) &
-    osm_control_i(C_MENU_SW2_4) &
-    osm_control_i(C_MENU_SW2_5) &
+    osm_control_i(C_MENU_SW2_7) &
     osm_control_i(C_MENU_SW2_6) &
-    osm_control_i(C_MENU_SW2_7));
+    osm_control_i(C_MENU_SW2_5) &
+    osm_control_i(C_MENU_SW2_4) &
+    osm_control_i(C_MENU_SW2_3) &
+    osm_control_i(C_MENU_SW2_2) &
+    osm_control_i(C_MENU_SW2_1) &
+    osm_control_i(C_MENU_SW2_0));
     
     gs_dipsw <=  x"0000" & gs_dipsw_b & gs_dipsw_a;
     gs_cab_1p(0) <= keyboard_n(m65_1);
     gs_cab_1p(1) <= keyboard_n(m65_2);
     gs_coin(0) <= keyboard_n(m65_6);
     gs_coin(1) <= keyboard_n(m65_5);
-    service <= keyboard_n(m65_9);
     
-    potxy1_sw   <= osm_control_i(C_MENU_SECOND_FIRE_1); -- Joy 1: 0 = POTX, 1 = POTY
-    potxy2_sw   <= osm_control_i(C_MENU_SECOND_FIRE_2); -- Joy 2: 0 = POTX, 1 = POTY
-    pot_pol1_sw <= osm_control_i(C_MENU_POTPOL_1);      -- Joy 1 polarity
-    pot_pol2_sw <= osm_control_i(C_MENU_POTPOL_2);      -- Joy 2 polarity
+    pot_pol1_sw <= osm_control_i(C_MENU_POTPOL_1);
+    pot_pol2_sw <= osm_control_i(C_MENU_POTPOL_2);
     
-    second_button_proc : process(all)
+    -- Active-low physical inputs. Both POT axes are used independently.
+    p1_fire_n <= joy_1_fire_n_i;
+    p2_fire_n <= joy_2_fire_n_i;
+    p1_potx_n <= '0' when (pot_pol1_sw = '1' and unsigned(pot1_x_i) < 128) or
+                          (pot_pol1_sw = '0' and unsigned(pot1_x_i) >= 128) else '1';
+    p1_poty_n <= '0' when (pot_pol1_sw = '1' and unsigned(pot1_y_i) < 128) or
+                          (pot_pol1_sw = '0' and unsigned(pot1_y_i) >= 128) else '1';
+    p2_potx_n <= '0' when (pot_pol2_sw = '1' and unsigned(pot2_x_i) < 128) or
+                          (pot_pol2_sw = '0' and unsigned(pot2_x_i) >= 128) else '1';
+    p2_poty_n <= '0' when (pot_pol2_sw = '1' and unsigned(pot2_y_i) < 128) or
+                          (pot_pol2_sw = '0' and unsigned(pot2_y_i) >= 128) else '1';
+    
+    -- Six mutually exclusive menu choices. First choice is the default.
+    -- Output order is Left, Centre, Right.
+    fire_layout_proc : process(all)
+    variable layout1, layout2 : integer range 0 to 5;
     begin
-    
-       -------------------------------------------------------------------------
-       -- Select POTX/POTY independently for both joystick ports
-       ------------------------------------------------------------------------
-        
-        -- Player 1
-        if potxy1_sw = '0' then
-           pot1_val <= pot1_x_i;
-        else
-           pot1_val <= pot1_y_i;
-        end if;
-        
-        -- Player 2
-        if potxy2_sw = '0' then
-           pot2_val <= pot2_x_i;
-        else
-           pot2_val <= pot2_y_i;
-        end if;
-    
-       ------------------------------------------------------------------------
-       -- Player 1 second fire
-       ------------------------------------------------------------------------
-       if pot_pol1_sw = '1' then
-    
-          -- Active-low POT button
-          if unsigned(pot1_val) < unsigned'(x"80") then
-             shoot2_button1_n <= '0';
-          else
-             shoot2_button1_n <= '1';
-          end if;
-       else
-          -- Active-high POT button
-          if unsigned(pot1_val) >= unsigned'(x"80") then
-             shoot2_button1_n <= '0';
-          else
-             shoot2_button1_n <= '1';
-          end if;
-       end if;
-       
-       -----------------------------------------------------------------------
-       -- Player 2 second fire
-       ------------------------------------------------------------------------
-       if pot_pol2_sw = '1' then
-    
-          -- Active-low POT button
-          if unsigned(pot2_val) < unsigned'(x"80") then
-             shoot2_button2_n <= '0';
-          else
-             shoot2_button2_n <= '1';
-          end if;
-       else
-          -- Active-high POT button
-          if unsigned(pot2_val) >= unsigned'(x"80") then
-             shoot2_button2_n <= '0';
-          else
-             shoot2_button2_n <= '1';
-          end if;
-       end if;
+        layout1 := 0;
+        layout2 := 0;
+        for i in 0 to 5 loop
+            if osm_control_i(C_MENU_FIRE_LAYOUT_1 + i) = '1' then
+                layout1 := i;
+            end if;
+            if osm_control_i(C_MENU_FIRE_LAYOUT_2 + i) = '1' then
+                layout2 := i;
+            end if;
+        end loop;
+        case layout1 is
+            when 0 => p1_left_n <= p1_potx_n; p1_centre_n <= p1_fire_n; p1_right_n <= p1_poty_n;
+            when 1 => p1_left_n <= p1_poty_n; p1_centre_n <= p1_fire_n; p1_right_n <= p1_potx_n;
+            when 2 => p1_left_n <= p1_fire_n; p1_centre_n <= p1_potx_n; p1_right_n <= p1_poty_n;
+            when 3 => p1_left_n <= p1_fire_n; p1_centre_n <= p1_poty_n; p1_right_n <= p1_potx_n;
+            when 4 => p1_left_n <= p1_potx_n; p1_centre_n <= p1_poty_n; p1_right_n <= p1_fire_n;
+            when others => p1_left_n <= p1_poty_n; p1_centre_n <= p1_potx_n; p1_right_n <= p1_fire_n;
+        end case;
+        case layout2 is
+            when 0 => p2_left_n <= p2_potx_n; p2_centre_n <= p2_fire_n; p2_right_n <= p2_poty_n;
+            when 1 => p2_left_n <= p2_poty_n; p2_centre_n <= p2_fire_n; p2_right_n <= p2_potx_n;
+            when 2 => p2_left_n <= p2_fire_n; p2_centre_n <= p2_potx_n; p2_right_n <= p2_poty_n;
+            when 3 => p2_left_n <= p2_fire_n; p2_centre_n <= p2_poty_n; p2_right_n <= p2_potx_n;
+            when 4 => p2_left_n <= p2_potx_n; p2_centre_n <= p2_poty_n; p2_right_n <= p2_fire_n;
+            when others => p2_left_n <= p2_poty_n; p2_centre_n <= p2_potx_n; p2_right_n <= p2_fire_n;
+        end case;
     end process;
-    
-    -- -------------------------------------------------------------------------
-    -- Player 1 controls
-    -- Active low
-    -- -------------------------------------------------------------------------
-    
-    -- Player 1 joystick - active low
+
+
     joystick1(0) <= joy_1_right_n_i and keyboard_n(m65_horz_crsr);
     joystick1(1) <= joy_1_left_n_i  and keyboard_n(m65_left_crsr);
     joystick1(2) <= joy_1_down_n_i  and keyboard_n(m65_vert_crsr);
     joystick1(3) <= joy_1_up_n_i    and keyboard_n(m65_up_crsr);
-    -- Button 1 = Z / joystick fire
-    joystick1(4) <= joy_1_fire_n_i and keyboard_n(m65_z);
-    -- Button 2 = X / second joystick button
-    joystick1(5) <=  keyboard_n(m65_x) and shoot2_button1_n;
-    
-    -- Player 2 joystick - active low
-    joystick2(0) <= joy_2_right_n_i and keyboard_n(m65_horz_crsr);
-    joystick2(1) <= joy_2_left_n_i  and keyboard_n(m65_left_crsr);
-    joystick2(2) <= joy_2_down_n_i  and keyboard_n(m65_vert_crsr);
-    joystick2(3) <= joy_2_up_n_i    and keyboard_n(m65_up_crsr);
-    -- Butto2 1 = Z / joystick fire
-    joystick2(4) <= joy_2_fire_n_i and keyboard_n(m65_z);
-    -- Button 2 = X / second joystick button
-    joystick2(5) <=  keyboard_n(m65_x) and shoot2_button2_n;
+    joystick1(4) <= p1_left_n   and keyboard_n(m65_z);
+    joystick1(5) <= p1_centre_n and keyboard_n(m65_x);
+    joystick1(6) <= p1_right_n  and keyboard_n(m65_c);
+
+    joystick2(0) <= joy_2_right_n_i;
+    joystick2(1) <= joy_2_left_n_i;
+    joystick2(2) <= joy_2_down_n_i;
+    joystick2(3) <= joy_2_up_n_i;
+    joystick2(4) <= p2_left_n;
+    joystick2(5) <= p2_centre_n;
+    joystick2(6) <= p2_right_n;
     
     -- -------------------------------------------------------------------------
     -- JTFRAME clock enables (48 MHz)
@@ -464,7 +437,7 @@ begin
         joystick2   => joystick2,
         coin        => gs_coin,
         cab_1p      => gs_cab_1p,
-        service     => service,
+        service     => keyboard_n(m65_9),
 
         -- DIP switches
         dipsw       => gs_dipsw,
@@ -538,8 +511,8 @@ begin
    -- Use the audio mixer
     i_audio_mixer : entity work.jtframe_mixer
     generic map (
-       W0   => 10,
-       W1   => 10,
+       W0   => 11,
+       W1   => 11,
        W2   => 16,
        W3   => 16,
        WOUT => 16
@@ -549,8 +522,8 @@ begin
        clk   => clk_main_i,
        cen   => '1',
     
-       ch0   => signed(psg0),
-       ch1   => signed(psg1),
+       ch0   => signed('0' & psg0),
+       ch1  => signed('0' & psg1),
        ch2   => signed(fm0),
        ch3   => signed(fm1),
     

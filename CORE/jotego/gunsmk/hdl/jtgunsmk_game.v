@@ -18,8 +18,8 @@ module jtgunsmk_game(
     input             pxl2_cen,
 
     // Cabinet
-    input      [5:0]  joystick1,
-    input      [5:0]  joystick2,
+    input      [6:0]  joystick1,
+    input      [6:0]  joystick2,
     input      [1:0]  coin,
     input      [1:0]  cab_1p,
     input             service,
