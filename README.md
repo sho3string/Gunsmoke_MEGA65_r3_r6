@@ -62,10 +62,28 @@ Unblock-File .\gunsmoke.ps1
 By default, the PowerShell script locates the ZIP archives relative to its own directory, not PowerShell's working directory. To use different archive locations:
 
 ```powershell
-.\gunsmoke.ps1 -MameZip 'D:\ROMs\gunsmoke.zip' -MegaZip 'D:\ROMs\gunsmoke_meg65_roms.zip'
+.\gunsmoke.ps1
 ```
 
-To specify an output directory, add `-OutputDir 'D:\ROMs\gunsmoke'`.
+Example Output:  
+
+PS D:\Github\Gunsmoke\CORE> .\gunsmoke.ps1  
+
+Security warning  
+Run only scripts that you trust. While scripts from the internet can be useful, this script can potentially harm your  
+computer. If you trust this script, use the Unblock-File cmdlet to allow the script to run without this warning  
+message. Do you want to run D:\Github\Gunsmoke\CORE\gunsmoke.ps1?  
+[D] Do not run  [R] Run once  [S] Suspend  [?] Help (default is "D"): R  
+MAME ZIP:     D:\Github\Gunsmoke\CORE\gunsmoke.zip  
+Prepared ZIP: D:\Github\Gunsmoke\CORE\gunsmoke_meg65_roms.zip  
+Output:       D:\Github\Gunsmoke\CORE\arcade\gunsmoke  
+gunsmoke_main.rom          98304 bytes  CRC32 E9558550  
+gunsmoke_sound.rom         32768 bytes  CRC32 CD7A2C38  
+gunsmoke_char.rom          16384 bytes  CRC32 887C649F  
+gunsmoke_map.rom           32768 bytes  CRC32 0C65E533  
+gunsmoke_scr.rom          262144 bytes  CRC32 A8FC2FB9  
+gunsmoke_obj.rom          262144 bytes  CRC32 D9C6C64F  
+gunsmoke_prom.rom           2560 bytes  CRC32 C1196F40  
 
 #### Linux
 
@@ -76,13 +94,25 @@ chmod +x gunsmoke.sh
 ./gunsmoke.sh
 ```
 
-To supply different archive paths, pass the MAME ZIP, prepared ZIP and optional output directory as positional arguments:
-
 ```bash
-./gunsmoke.sh /path/to/gunsmoke.zip /path/to/gunsmoke_meg65_roms.zip /path/to/output
+./gunsmoke.sh
 ```
 
 The Bash script requires `bash`, `unzip`, `perl` and the Perl module `Compress::Zlib`.
+
+Example Output:
+
+./gunsmoke.sh  
+gunsmoke_main.rom          98304 bytes  CRC32 E9558550  
+gunsmoke_sound.rom         32768 bytes  CRC32 CD7A2C38  
+gunsmoke_char.rom          16384 bytes  CRC32 887C649F  
+gunsmoke_map.rom           32768 bytes  CRC32 0C65E533  
+gunsmoke_scr.rom          262144 bytes  CRC32 A8FC2FB9  
+gunsmoke_obj.rom          262144 bytes  CRC32 D9C6C64F  
+gunsmoke_prom.rom           2560 bytes  CRC32 C1196F40  
+
+ROMs written to: /mnt/hgfs/Github/Gunsmoke/CORE/arcade/gunsmoke  
+
 
 #### Python
 
@@ -93,7 +123,7 @@ python3 gunsmoke.py gunsmoke.zip gunsmoke_meg65_roms.zip
 To override the destination:
 
 ```bash
-python3 gunsmoke.py gunsmoke.zip gunsmoke_meg65_roms.zip --output /path/to/output
+python3 gunsmoke.py gunsmoke.zip
 ```
 
 Python 3 is required; no third-party Python packages are needed.
@@ -105,6 +135,18 @@ By default, all three scripts write seven individual ROM files to:
 ```text
 arcade/gunsmoke
 ```
+
+Example Output:  
+
+python gunsmoke.py gunsmoke.zip  
+gunsmoke_main.rom          98304 bytes  CRC32 E9558550  
+gunsmoke_sound.rom         32768 bytes  CRC32 CD7A2C38  
+gunsmoke_char.rom          16384 bytes  CRC32 887C649F  
+gunsmoke_map.rom           32768 bytes  CRC32 0C65E533  
+gunsmoke_scr.rom          262144 bytes  CRC32 A8FC2FB9  
+gunsmoke_obj.rom          262144 bytes  CRC32 D9C6C64F  
+gunsmoke_prom.rom           2560 bytes  CRC32 C1196F40  
+
 
 The conversion applies the JTCORES graphics transformations required by this MEGA65 port:
 
